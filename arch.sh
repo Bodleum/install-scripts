@@ -60,14 +60,14 @@ packages="\
  grub \
  efibootmgr \
  os-prober \
-
+ \
  networkmanager \
  network-manager-applet \
  wpa_supplicant \
-
+ \
  avahi \
  cups \
-
+ \
  base-devel \
  dosfstools \
  linux-headers \
@@ -75,29 +75,29 @@ packages="\
  shadow \
  xdg-user-dirs \
  xdg-utils \
-
+ \
  bluez \
  bluez-utils \
-
+ \
  alsa-utils \
  pipewire-alsa \
  pipewire-pulse \
  pipewire-jack \
-
+ \
  openssh \
  rsync \
-
+ \
  vivaldi \
-
+ \
  youtube-dl \
  qbittorrent \
-
+ \
  sxiv \
  mpv \
-
+ \
  mpd \
  ncmpcpp \
-
+ \
  alacritty \
  zsh \
  "
@@ -108,13 +108,6 @@ aurpackages="
  "
 
 pacman -Syu --no-confirm $packages
-# AUR
-git clone https://aur.archlinux.org/paru
-pushd paru
-makepkg -si PKGBUILD
-popd
-rm -r paru
-paru -Syu $aurpackages
 
 # NVIDIA stuff
 
@@ -137,4 +130,10 @@ useradd -m -G wheel -s /bin/zsh $name
 echo "$name:$pass1" | chpasswd
 unset pass1 pass2
 
-
+# AUR
+git clone https://aur.archlinux.org/paru
+pushd paru
+sudo -u $name makepkg --noconfirm -si PKGBUILD
+popd
+rm -r paru
+paru -Syu $aurpackages
