@@ -13,6 +13,14 @@ gecho(){ echo -e "\033[1;32m$*\033[0m"; }
 #############
 # Hostname
 read -r -p $"Enter the hostname: " hostname
+# Root password
+read -r -s -p $"Password for root: " rootpasswd1
+read -r -s -p $"Re-enter password for root: " rootpasswd2
+while ! [ $rootpasswd1 = $rootpasswd2 ]; do
+    unset rootpasswd2
+    read -r -s -p $"Passwords don't match. Try again. Password for root: " rootpasswd1
+    read -r -s -p $"Re-enter password for root: " rootpasswd2
+done
 # Username and password
 read -r -p $"Username for account: " name
 while ! echo $name | grep -q "^[a-z_][a-z0-9_-]*$"; do
@@ -45,10 +53,6 @@ echo $hostname >> /etc/hostname
 echo "127.0.0.1 localhost" >> /etc/hosts
 echo ":1        localhost" >> /etc/hosts
 echo "127.0.0.1 "$hostname".localdomain "$hostname >> /etc/hosts
-
-# Change root password
-gecho "Enter password for the root user: "
-passwd
 
 # Install basic programs
 packages="\
@@ -103,7 +107,6 @@ aurpackages="
  "
 
 gecho "Installing packages"
-read -rsp $'Press enter to continue...\n'
 pacman -Syu --noconfirm $packages
 
 # NVIDIA stuff
@@ -127,13 +130,12 @@ systemctl enable shadow.timer
 # Add user
 gecho "Adding user $name"
 useradd -m -G wheel -s /bin/zsh $name
-echo "$name:$pass1" | chpasswd
-unset pass1 pass2
+echo "root:$rootpasswd1 $name:$passwd1" | chpasswd
+unset passwd1 passwd2 rootpasswd1 rootpasswd2
 
 # AUR
 gecho "Installing AUR helper (paru) and AUR packages"
-read -rsp $'Press enter to continue...\n'
-git clone https://aur.archlinux.org/paru
+sudo -u $name git clone https://aur.archlinux.org/paru
 pushd paru
 sudo -u $name makepkg --noconfirm -si PKGBUILD
 popd
