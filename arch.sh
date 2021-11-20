@@ -18,12 +18,12 @@ read -r -p $"Username for account: " name
 while ! echo $name | grep -q "^[a-z_][a-z0-9_-]*$"; do
     read -r -p $"Invalid username. Must start with a letter, and contain only lowercase letters, numbers, _ or -." name
 done
-read -r -s -p $"Password for $name" passwd1
-read -r -s -p $"Re-enter password for $name" passwd2
+read -r -s -p $"Password for $name: " passwd1
+read -r -s -p $"Re-enter password for $name: " passwd2
 while ! [ $passwd1 = $passwd2 ]; do
     unset passwd2
-    read -r -s -p $"Passwords don't match. Try again. Password for $name" passwd1
-    read -r -s -p $"Re-enter password for $name" passwd2
+    read -r -s -p $"Passwords don't match. Try again. Password for $name: " passwd1
+    read -r -s -p $"Re-enter password for $name: " passwd2
 done
 
 ###############
