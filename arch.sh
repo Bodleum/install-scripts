@@ -29,6 +29,7 @@ done
 ###############
 # Basic setup #
 ###############
+gecho "Basic setup"
 # Set timezone
 ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
 hwclock --systohc
@@ -46,6 +47,7 @@ echo ":1        localhost" >> /etc/hosts
 echo "127.0.0.1 "$hostname".localdomain "$hostname >> /etc/hosts
 
 # Change root password
+gecho "Enter password for the root user: "
 passwd
 
 # Install basic programs
@@ -100,15 +102,19 @@ aurpackages="
     lf \
  "
 
+gecho "Installing packages"
+read -rsp $'Press enter to continue...\n'
 pacman -Syu --no-confirm $packages
 
 # NVIDIA stuff
 
 # GRUB
+gecho "Installing GRUB"
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enable services
+gecho "Enabling services"
 systemctl enable NetworkManager
 systemctl enable bluetooth
 systemctl enable cups.service
@@ -119,11 +125,14 @@ systemctl enable fstrim.timer
 systemctl enable shadow.timer
 
 # Add user
+gecho "Adding user $name"
 useradd -m -G wheel -s /bin/zsh $name
 echo "$name:$pass1" | chpasswd
 unset pass1 pass2
 
 # AUR
+gecho "Installing AUR helper (paru) and AUR packages"
+read -rsp $'Press enter to continue...\n'
 git clone https://aur.archlinux.org/paru
 pushd paru
 sudo -u $name makepkg --noconfirm -si PKGBUILD
