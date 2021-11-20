@@ -12,25 +12,18 @@ gecho(){ echo -e "\033[1;32m$*\033[0m"; }
 # Get input #
 #############
 # Hostname
-echo "Hostname:"
-read hostname
+read -r -p $"Enter the hostname: " hostname
 # Username and password
-echo "Username for account:"
-read name
+read -r -p $"Username for account: " name
 while ! echo $name | grep -q "^[a-z_][a-z0-9_-]*$"; do
-    echo "Invalid username. Must start with a letter, and contain only lowercase letters, numbers, _ or -."
-    read name
+    read -r -p $"Invalid username. Must start with a letter, and contain only lowercase letters, numbers, _ or -." name
 done
-echo "Password for "$name
-read passwd1
-echo "Re-enter password for "$name
-read passwd2
+read -r -s -p $"Password for $name" passwd1
+read -r -s -p $"Re-enter password for $name" passwd2
 while ! [ $passwd1 = $passwd2 ]; do
     unset passwd2
-    echo "Passwords don't match. Try again. Password for "$name
-    read passwd1
-    echo "Re-enter password for "$name
-    read passwd2
+    read -r -s -p $"Passwords don't match. Try again. Password for $name" passwd1
+    read -r -s -p $"Re-enter password for $name" passwd2
 done
 
 ###############
