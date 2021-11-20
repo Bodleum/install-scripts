@@ -2,9 +2,11 @@
 
 # Make sure the script is run as root
 if [ $EUID -ne 0]; then
-    echo -e "\033[0;31mThis script must be run as root!\033[0m"
+    echo -e "\033[1;31mThis script must be run as root!\033[0m"
     exit 1
 fi
+
+gecho(){ echo -e "\033[1;32m$*\033[0m"; }
 
 #############
 # Get input #
@@ -60,4 +62,85 @@ echo "127.0.0.1 "$hostname".localdomain "$hostname >> /etc/hosts
 passwd
 
 # Install basic programs
-pacman -S --no-confirm grub efibootmgr networkmanager network-manager-applet wpa-supplicant dosfstools reflector base-devel linux-headers avahi xdg-user-dirs xdg-utils bluez bluez-utils cups alsa-utils pipewire-alsa pipewire-pulse pipewire-jack openssh rsync os-prober
+packages="\
+ grub \
+ efibootmgr \
+ os-prober \
+
+ networkmanager \
+ network-manager-applet \
+ wpa_supplicant \
+
+ avahi \
+ cups \
+
+ base-devel \
+ dosfstools \
+ linux-headers \
+ reflector \
+ shadow \
+ xdg-user-dirs \
+ xdg-utils \
+
+ bluez \
+ bluez-utils \
+
+ alsa-utils \
+ pipewire-alsa \
+ pipewire-pulse \
+ pipewire-jack \
+
+ openssh \
+ rsync \
+
+ vivaldi \
+
+ youtube-dl \
+ qbittorrent \
+
+ sxiv \
+ mpv \
+
+ mpd \
+ ncmpcpp \
+
+ alacritty \
+ zsh \
+ "
+
+aurpackages="
+    ferdi \
+    lf \
+ "
+
+pacman -Syu --no-confirm $packages
+# AUR
+git clone https://aur.archlinux.org/paru
+pushd paru
+makepkg -si PKGBUILD
+popd
+rm -r paru
+paru -Syu $aurpackages
+
+# NVIDIA stuff
+
+# GRUB
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# Enable services
+systemctl enable NetworkManager
+systemctl enable bluetooth
+systemctl enable cups.service
+systemctl enable sshd
+systemctl enable avadi-daemon
+systemctl enable reflector.timer
+systemctl enable fstrim.timer
+systemctl enable shadow.timer
+
+# Add user
+useradd -m -G wheel -s /bin/zsh $name
+echo "$name:$pass1" | chpasswd
+unset pass1 pass2
+
+
