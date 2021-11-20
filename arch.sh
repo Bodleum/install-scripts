@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Make sure the script is run as root
-if [ $EUID -ne 0]; then
+if [ $EUID -ne 0 ]; then
     echo -e "\033[1;31mThis script must be run as root!\033[0m"
     exit 1
 fi
@@ -25,7 +25,7 @@ echo "Password for "$name
 read passwd1
 echo "Re-enter password for "$name
 read passwd2
-while ! [$passwd1 = $passwd2]; do
+while ! [ $passwd1 = $passwd2 ]; do
     unset passwd2
     echo "Passwords don't match. Try again. Password for "$name
     read passwd1
@@ -36,12 +36,6 @@ done
 ###############
 # Basic setup #
 ###############
-# Generate fstab
-genfstab -U /mnt >> /mnt/etc/fstab
-
-# Chroot into installation
-arch-chroot /mnt
-
 # Set timezone
 ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
 hwclock --systohc
