@@ -104,7 +104,7 @@ aurpackages="
 
 gecho "Installing packages"
 read -rsp $'Press enter to continue...\n'
-pacman -Syu --no-confirm $packages
+pacman -Syu --noconfirm $packages
 
 # NVIDIA stuff
 
