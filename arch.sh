@@ -135,9 +135,12 @@ unset passwd1 passwd2 rootpasswd1 rootpasswd2
 
 # AUR
 gecho "Installing AUR helper (paru) and AUR packages"
-sudo -u $name git clone https://aur.archlinux.org/paru
-pushd paru
+sudo -u $name git clone https://aur.archlinux.org/paru /home/$name/paru
+pushd /home/$name/paru
 sudo -u $name makepkg --noconfirm -si PKGBUILD
-popd
 rm -r paru
+popd
 paru -Syu $aurpackages
+
+# Set zsh dotdir
+echo "export ZDOTDIR=\"${XDG_CONFIG_HOME:-$HOME/.config}/zsh\"" > /etc/zsh/zshenv
